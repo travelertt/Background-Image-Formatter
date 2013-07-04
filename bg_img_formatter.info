@@ -1,0 +1,4 @@
+name = Background Image Formatter
+description = Adds image field formatter for placing a image in a CSS bacground property.
+package = Fields
+core = 7.x
