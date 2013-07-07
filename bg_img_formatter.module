@@ -4,8 +4,6 @@
  * Adds a formatter for image fields that places the image inside an
  * CSS class background property.
  *
- * @todo Form Validation
- * @todo XSS
  * @todo Help page
  * @todo Config page for defaults?
  * @todo Remove form label? etc.?
@@ -35,11 +33,11 @@ function bg_img_formatter_field_formatter_settings_form($field, $instance, $view
   $settings = $display['settings'];
   $element['bg_selector'] = array(
     '#type' => 'textfield',
-    '#title' => t('Class'),
+    '#title' => t('CSS Selector'),
     '#default_value' => $settings['bg_selector'],
     '#required' => TRUE,
     '#element_validate' => array('check_plain'),
-    '#description' => t('CSS class rule name that will be created. Must follow CSS class name rules. @todo add link to w3c.'),
+    '#description' => t('CSS selector name that will be created, with the image(s) attached.  <a href="http://www.w3.org/TR/CSS2/selector.html">W3C Selectors</a>'),
   );
 
   return $element;
@@ -51,7 +49,7 @@ function bg_img_formatter_field_formatter_settings_form($field, $instance, $view
 function bg_img_formatter_field_formatter_settings_summary($field, $instance, $view_mode) {
   $display = $instance['display'][$view_mode];
   $settings = $display['settings'];
-  $summary = t('A CSS selector inputed <code>@bg_selector</code> will be created with the image set as the background-image property.', array(
+  $summary = t('The CSS selector <code>@bg_selector</code> will be created with the image set to the background-image property.', array(
     '@bg_selector' => $settings['bg_selector'],
   ));
 
@@ -68,7 +66,7 @@ function bg_img_formatter_field_formatter_view($entity_type, $entity, $field, $i
   switch ($display['type']) {
     case 'image_bg_img':
       if(!$items) {
-        watchdog('bg_img_formatter', 'NO Images found. You must add an image.', array(), WATCHDOG_NOTICE, 'link');
+        drupal_set_message(t('NO Images found. You must add an image.'), 'error');
         break;
       }
       foreach ($items as $delta => $item) {
@@ -102,13 +100,16 @@ function theme_bg_img($variables) {
   extract($variables);
   $css  = '';
   $urls = array();
+  $bg_selector = filter_xss($bg_selector);
+  // Allow '>' in string
+  $bg_selector = str_ireplace('&lt;', '>', $bg_selector);
 
   foreach ($images as $delta => $item) {
     $src = file_create_url($item['uri']);
     $urls[] = 'url(\'' . $src . '\')';
   }
   $urls = implode(', ', $urls);
-
+  
   $css .= $bg_selector . '{background-image: ' . $urls . ';}';
   drupal_add_css( $css, $option['type'] = 'inline');
 
