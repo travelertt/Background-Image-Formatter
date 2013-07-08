@@ -3,11 +3,6 @@
  * @file
  * Adds a formatter for image fields that places the image inside an
  * CSS class background property.
- *
- * @todo Help page
- * @todo Config page for defaults?
- * @todo Remove form label? etc.?
- * @todo Seperate file for theme.inc?
  */
 
 /**
@@ -23,6 +18,23 @@ function bg_img_formatter_field_formatter_info() {
       )
     ),
   );
+}
+
+/**
+ * Implements hook_help().
+ */
+function bg_img_formatter_help($path, $arg) {
+  switch ($path) {
+    case 'admin/help#bg_img_formatter':
+      $output = '<h3>' . t('How To') . '</h3>';
+      $output .= '<ol>';
+      $output .= t('<li>Create a new image field.</li>');
+      $output .= t('<li>On the Manage Display tab, select Background Image as the Display Formater.</li>');
+      $output .= t('<li>Enter a CSS selector in the formatter Widget.</li>');
+      $output .= t('<li>Save the Form. A CSS selector with be loaded on the Content Type content.</li>');
+      $output .= '</ol>';
+      return $output;
+  }
 }
 
 /**
